@@ -63,7 +63,8 @@ namespace Sneik.GameObjects
 
 		public void HandleUserInput(KeyboardState state)
 		{
-			if (state.GetPressedKeyCount() > 1)
+			var pressedKeyCount = state.GetPressedKeyCount();
+			if (pressedKeyCount > 1 || pressedKeyCount == 0)
 			{
 				return;
 			}
