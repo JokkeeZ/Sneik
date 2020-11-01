@@ -1,2 +1,2 @@
 # Sneik
- Snake made with MonoGame
+ Snake made in C# using [MonoGame](https://github.com/MonoGame/MonoGame)
