@@ -2,11 +2,11 @@
 
 namespace Sneik.GameObjects
 {
-	interface ISneikGameObject
+	interface IGameObject
 	{
 		bool IsAlive { get; set; }
 
-		(int X, int Y) Position { get; set; }
+		(int X, int Y) GetPosition();
 
 		int Size { get; }
 

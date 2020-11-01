@@ -107,7 +107,7 @@ namespace Sneik
 			}
 			else
 			{
-				spriteBatch.DrawCenteredStringWithOffset(gameOverFont, "Press Enter to start the game.", Color.Green, 0, -100);
+				spriteBatch.DrawCenteredStringWithOffset(gameOverFont, "Press Enter to start the game.", Color.Green, (0, -100));
 				spriteBatch.DrawCenteredStringWithOffset(scoreFont, string.Join("\n", new[]
 				{
 					"           Keybindings",
@@ -118,7 +118,7 @@ namespace Sneik
 					">  Arrow Left  : Move left",
 					">  Arrow Right : Move right",
 					">  Enter       : Start the game"
-				}), Color.White, 0, 70);
+				}), Color.White, (0, 70));
 			}
 
 			spriteBatch.End();

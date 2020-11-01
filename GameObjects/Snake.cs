@@ -6,7 +6,7 @@ using Sneik.Utils;
 
 namespace Sneik.GameObjects
 {
-	class Snake : ISneikGameObject
+	class Snake : IGameObject
 	{
 		const int INTERVAL_MILLISECONDS = 76;
 
@@ -18,12 +18,6 @@ namespace Sneik.GameObjects
 		private (int X, int Y) direction = (1, 0);
 
 		private bool gridMode = true;
-
-		public (int X, int Y) Position
-		{
-			get => position;
-			set => position = value;
-		}
 
 		public int Size => Constants.RECT_SIZE;
 
@@ -64,7 +58,7 @@ namespace Sneik.GameObjects
 		public void HandleUserInput(KeyboardState state)
 		{
 			var pressedKeyCount = state.GetPressedKeyCount();
-			if (pressedKeyCount > 1 || pressedKeyCount == 0)
+			if (pressedKeyCount != 1)
 			{
 				return;
 			}
@@ -101,12 +95,14 @@ namespace Sneik.GameObjects
 			direction = (x, y);
 		}
 
-		public bool CollisionWithApple(Apple apple) => Position == apple.Position;
+		public bool CollisionWithApple(Apple apple) => position == apple.GetPosition();
 
 		public void ExtendTail()
 		{
 			tailParts.Add(new Rectangle(position.X, position.Y, Size, Size));
 		}
+
+		public (int X, int Y) GetPosition() => position;
 
 		public void SetStartingPosition()
 		{

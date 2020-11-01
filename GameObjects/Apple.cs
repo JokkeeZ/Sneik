@@ -5,13 +5,13 @@ using Sneik.Utils;
 
 namespace Sneik.GameObjects
 {
-	class Apple : ISneikGameObject
+	class Apple : IGameObject
 	{
 		private readonly Random random;
 
 		public bool IsAlive { get; set; }
 
-		public (int X, int Y) Position { get; set; }
+		private (int X, int Y) position;
 
 		public int Size => Constants.RECT_SIZE;
 
@@ -25,9 +25,11 @@ namespace Sneik.GameObjects
 			Texture.SetData(new[] { Color.White });
 		}
 
+		public (int X, int Y) GetPosition() => position;
+
 		public void ResetToRandomPosition()
 		{
-			Position = (
+			position = (
 				random.Next(0, Constants.WINDOW_SIZE / Size) * Size,
 				random.Next(0, Constants.WINDOW_SIZE / Size) * Size);
 
@@ -49,7 +51,7 @@ namespace Sneik.GameObjects
 				return;
 			}
 
-			spriteBatch.Draw(Texture, new Rectangle(Position.X, Position.Y, Size, Size), Color.Red);
+			spriteBatch.Draw(Texture, new Rectangle(position.X, position.Y, Size, Size), Color.Red);
 		}
 	}
 }
