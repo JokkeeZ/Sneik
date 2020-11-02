@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -36,7 +37,7 @@ namespace Sneik.GameObjects
 			Texture.SetData(new[] { Color.White });
 		}
 
-		public bool CanMove(Directions direction) => direction switch
+		private bool CanMove(Directions direction) => direction switch
 		{
 			Directions.Up => Tail.Count == 1 || (Tail.Count > 1 && this.direction.Y != 1),
 			Directions.Down => Tail.Count == 1 || (Tail.Count > 1 && this.direction.Y != -1),
@@ -63,37 +64,29 @@ namespace Sneik.GameObjects
 				return;
 			}
 
-			if (KeyboardExtension.IsKeyPress(Keys.T))
-			{
-				gridMode = !gridMode;
-			}
+			var key = state.GetPressedKeys().First();
+			if (!KeyboardExtension.PreviouslyKeyUp(key))
+				return;
 
-			var (x, y) = direction;
-			if (KeyboardExtension.IsKeyPress(Keys.Up) && CanMove(Directions.Up))
-			{
-				(x, y) = (0, -1);
-			}
-			else if (KeyboardExtension.IsKeyPress(Keys.Down) && CanMove(Directions.Down))
-			{
-				(x, y) = (0, 1);
-			}
-			else if (KeyboardExtension.IsKeyPress(Keys.Left) && CanMove(Directions.Left))
-			{
-				(x, y) = (-1, 0);
-			}
-			else if (KeyboardExtension.IsKeyPress(Keys.Right) && CanMove(Directions.Right))
-			{
-				(x, y) = (1, 0);
-			}
+			var (x, y) = GetMoveDirection(key);
 
 			// Trying to move to X and Y directions at the same time
-			if ((x, y) == (0, 0) || x == 1 && y == 1 || x == -1 && y == -1)
+			if ((x, y) == (0, 0) || (x, y) == (1, 1) || (x, y) == (-1, -1))
 			{
 				return;
 			}
 
 			direction = (x, y);
 		}
+
+		private (int X, int Y) GetMoveDirection(Keys key) => key switch
+		{
+			Keys.Up or Keys.W => CanMove(Directions.Up) ? (0, -1) : direction,
+			Keys.Down or Keys.S => CanMove(Directions.Down) ? (0, 1) : direction,
+			Keys.Left or Keys.A => CanMove(Directions.Left) ? (-1, 0) : direction,
+			Keys.Right or Keys.D => CanMove(Directions.Right) ? (1, 0) : direction,
+			_ => direction
+		};
 
 		public bool CollisionWithApple(Apple apple) => position == apple.Position;
 

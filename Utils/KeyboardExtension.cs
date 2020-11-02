@@ -15,6 +15,8 @@ namespace Sneik.Utils
 			return currentState;
 		}
 
+		public static bool PreviouslyKeyUp(Keys key) => previousState.IsKeyUp(key);
+
 		public static bool IsKeyPress(Keys key) => currentState.IsKeyDown(key) && previousState.IsKeyUp(key);
 	}
 }
