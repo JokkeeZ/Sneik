@@ -9,7 +9,7 @@ namespace Sneik.GameObjects
 {
 	class Snake : IGameObject
 	{
-		const int INTERVAL_MILLISECONDS = 76;
+		const int INTERVAL_MILLISECONDS = 96;
 
 		private int lastUpdate;
 

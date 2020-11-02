@@ -1,8 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Sneik.GameObjects;
 using Sneik.Utils;
+using Sneik.Utils.Saves;
 
 namespace Sneik
 {
@@ -17,6 +19,7 @@ namespace Sneik
 		private SpriteFont scoreFont;
 		private SpriteFont gameOverFont;
 
+		private Hiscore hiscore;
 		private bool started;
 		private int score;
 		private bool drawGrid;
@@ -38,6 +41,8 @@ namespace Sneik
 		protected override void Initialize()
 		{
 			snake.SetStartingPosition();
+			apple.ResetToRandomPosition(snake.Tail);
+
 			base.Initialize();
 		}
 
@@ -45,11 +50,24 @@ namespace Sneik
 		{
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
+			hiscore = SaveFile.Load();
+
 			scoreFont = Content.Load<SpriteFont>("ScoreFont");
 			gameOverFont = Content.Load<SpriteFont>("GameOverFont");
 
 			snake.SetupTexture(GraphicsDevice);
 			apple.SetupTexture(GraphicsDevice);
+		}
+
+		protected override void OnExiting(object sender, EventArgs args)
+		{
+			if (score > hiscore.PersonalBest)
+			{
+				hiscore.PersonalBest = score;
+				SaveFile.Save(hiscore);
+			}
+
+			base.OnExiting(sender, args);
 		}
 
 		protected override void Update(GameTime gameTime)
@@ -105,6 +123,7 @@ namespace Sneik
 				apple.Draw(spriteBatch);
 
 				spriteBatch.DrawString(scoreFont, $"Score: {score}", new Vector2(10, 10), Color.White);
+				spriteBatch.DrawString(scoreFont, $"Personal Best: {hiscore.PersonalBest}", new Vector2(10, 26), Color.White);
 
 				if (!snake.IsAlive)
 				{
