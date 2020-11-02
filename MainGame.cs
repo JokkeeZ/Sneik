@@ -19,6 +19,7 @@ namespace Sneik
 
 		private bool started;
 		private int score;
+		private bool drawGrid;
 
 		public MainGame()
 		{
@@ -27,6 +28,8 @@ namespace Sneik
 
 			graphics.PreferredBackBufferHeight = Constants.WINDOW_SIZE;
 			graphics.PreferredBackBufferWidth = Constants.WINDOW_SIZE;
+
+			IsMouseVisible = true;
 
 			snake = new Snake();
 			apple = new Apple();
@@ -45,40 +48,43 @@ namespace Sneik
 			scoreFont = Content.Load<SpriteFont>("ScoreFont");
 			gameOverFont = Content.Load<SpriteFont>("GameOverFont");
 
-			snake.SetupTexture(spriteBatch);
-			apple.SetupTexture(spriteBatch);
+			snake.SetupTexture(GraphicsDevice);
+			apple.SetupTexture(GraphicsDevice);
 		}
 
 		protected override void Update(GameTime gameTime)
 		{
-			var state = SneikKeyboard.GetState();
+			var state = KeyboardExtension.GetState();
 
-			if (SneikKeyboard.IsKeyPress(Keys.Escape))
+			if (KeyboardExtension.IsKeyPress(Keys.Escape))
 			{
 				Exit();
 				return;
 			}
 
-			if (!started && SneikKeyboard.IsKeyPress(Keys.Enter))
+			if (!started && KeyboardExtension.IsKeyPress(Keys.Enter))
 			{
 				started = true;
 			}
 
+			if (KeyboardExtension.IsKeyPress(Keys.G))
+			{
+				drawGrid = !drawGrid;
+			}
+
 			snake.Update(gameTime);
 
-			if (!snake.IsAlive && SneikKeyboard.IsKeyPress(Keys.Enter))
+			if (!snake.IsAlive && KeyboardExtension.IsKeyPress(Keys.Enter))
 			{
 				snake.ResetSnake();
 				score = 0;
 			}
 
-			apple.Update();
-
 			snake.HandleUserInput(state);
 
 			if (snake.CollisionWithApple(apple))
 			{
-				apple.ResetToRandomPosition();
+				apple.ResetToRandomPosition(snake.Tail);
 				snake.ExtendTail();
 
 				score++;
@@ -104,6 +110,13 @@ namespace Sneik
 				{
 					spriteBatch.DrawCenteredString(gameOverFont, $" ---> Game over! <---\nPress Enter to restart.", Color.White);
 				}
+				else
+				{
+					if (drawGrid)
+					{
+						spriteBatch.DrawGrid();
+					}
+				}
 			}
 			else
 			{
@@ -112,12 +125,13 @@ namespace Sneik
 				{
 					"           Keybindings",
 					"-------------------------------------",
-					">  T           : Toggle Snake Grid Mode",
-					">  Arrow Up    : Move up",
-					">  Arrow Down  : Move down",
-					">  Arrow Left  : Move left",
-					">  Arrow Right : Move right",
-					">  Enter       : Start the game"
+					">  T           : Toggle Snake Grid",
+					">  G           : Toggle Area Grid",
+					">  Arrow Up    : Move Up",
+					">  Arrow Down  : Move Down",
+					">  Arrow Left  : Move Left",
+					">  Arrow Right : Move Right",
+					">  Enter       : Start The Game"
 				}), Color.White, (0, 70));
 			}
 

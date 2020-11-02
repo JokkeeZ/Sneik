@@ -2,7 +2,7 @@
 
 namespace Sneik.Utils
 {
-	static class SneikKeyboard
+	static class KeyboardExtension
 	{
 		static KeyboardState previousState;
 		static KeyboardState currentState;

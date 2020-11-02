@@ -12,7 +12,7 @@ namespace Sneik.GameObjects
 
 		private int lastUpdate;
 
-		private readonly List<Rectangle> tailParts;
+		public List<Rectangle> Tail { get; }
 
 		private (int X, int Y) position;
 		private (int X, int Y) direction = (1, 0);
@@ -25,29 +25,29 @@ namespace Sneik.GameObjects
 
 		public Texture2D Texture { get; set; }
 
-		public Snake() => tailParts = new List<Rectangle>
+		public Snake() => Tail = new List<Rectangle>
 		{
 			new Rectangle(position.X, position.Y, Size, Size)
 		};
 
-		public void SetupTexture(SpriteBatch spriteBatch)
+		public void SetupTexture(GraphicsDevice graphics)
 		{
-			Texture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+			Texture = new Texture2D(graphics, 1, 1);
 			Texture.SetData(new[] { Color.White });
 		}
 
 		public bool CanMove(Directions direction) => direction switch
 		{
-			Directions.Up => tailParts.Count == 1 || (tailParts.Count > 1 && this.direction.Y != 1),
-			Directions.Down => tailParts.Count == 1 || (tailParts.Count > 1 && this.direction.Y != -1),
-			Directions.Left => tailParts.Count == 1 || (tailParts.Count > 1 && this.direction.X != 1),
-			Directions.Right => tailParts.Count == 1 || (tailParts.Count > 1 && this.direction.X != -1),
+			Directions.Up => Tail.Count == 1 || (Tail.Count > 1 && this.direction.Y != 1),
+			Directions.Down => Tail.Count == 1 || (Tail.Count > 1 && this.direction.Y != -1),
+			Directions.Left => Tail.Count == 1 || (Tail.Count > 1 && this.direction.X != 1),
+			Directions.Right => Tail.Count == 1 || (Tail.Count > 1 && this.direction.X != -1),
 			_ => false
 		};
 
 		public void ResetSnake()
 		{
-			tailParts.Clear();
+			Tail.Clear();
 
 			SetStartingPosition();
 
@@ -63,25 +63,25 @@ namespace Sneik.GameObjects
 				return;
 			}
 
-			if (SneikKeyboard.IsKeyPress(Keys.T))
+			if (KeyboardExtension.IsKeyPress(Keys.T))
 			{
 				gridMode = !gridMode;
 			}
 
 			var (x, y) = direction;
-			if (SneikKeyboard.IsKeyPress(Keys.Up) && CanMove(Directions.Up))
+			if (KeyboardExtension.IsKeyPress(Keys.Up) && CanMove(Directions.Up))
 			{
 				(x, y) = (0, -1);
 			}
-			else if (SneikKeyboard.IsKeyPress(Keys.Down) && CanMove(Directions.Down))
+			else if (KeyboardExtension.IsKeyPress(Keys.Down) && CanMove(Directions.Down))
 			{
 				(x, y) = (0, 1);
 			}
-			else if (SneikKeyboard.IsKeyPress(Keys.Left) && CanMove(Directions.Left))
+			else if (KeyboardExtension.IsKeyPress(Keys.Left) && CanMove(Directions.Left))
 			{
 				(x, y) = (-1, 0);
 			}
-			else if (SneikKeyboard.IsKeyPress(Keys.Right) && CanMove(Directions.Right))
+			else if (KeyboardExtension.IsKeyPress(Keys.Right) && CanMove(Directions.Right))
 			{
 				(x, y) = (1, 0);
 			}
@@ -95,14 +95,12 @@ namespace Sneik.GameObjects
 			direction = (x, y);
 		}
 
-		public bool CollisionWithApple(Apple apple) => position == apple.GetPosition();
+		public bool CollisionWithApple(Apple apple) => position == apple.Position;
 
 		public void ExtendTail()
 		{
-			tailParts.Add(new Rectangle(position.X, position.Y, Size, Size));
+			Tail.Add(new Rectangle(position.X, position.Y, Size, Size));
 		}
-
-		public (int X, int Y) GetPosition() => position;
 
 		public void SetStartingPosition()
 		{
@@ -126,26 +124,26 @@ namespace Sneik.GameObjects
 				position.Y = position.Y == -Size ? Constants.WINDOW_SIZE : position.Y == Constants.WINDOW_SIZE ? 0 : position.Y;
 				position.X = position.X == -Size ? Constants.WINDOW_SIZE : position.X == Constants.WINDOW_SIZE ? 0 : position.X;
 
-				if (tailParts.Count > 1)
+				if (Tail.Count > 1)
 				{
-					for (var i = tailParts.Count - 1; i > 0; --i)
+					for (var i = Tail.Count - 1; i > 0; --i)
 					{
-						if (CollisionWithTailPart(tailParts[i]))
+						if (CollisionWithTailPart(Tail[i]))
 						{
 							IsAlive = false;
 						}
 
-						tailParts[i] = new Rectangle(tailParts[i - 1].X, tailParts[i - 1].Y, Size, Size);
+						Tail[i] = new Rectangle(Tail[i - 1].X, Tail[i - 1].Y, Size, Size);
 					}
 				}
 
-				tailParts[0] = new Rectangle(position.X, position.Y, Size, Size);
+				Tail[0] = new Rectangle(position.X, position.Y, Size, Size);
 			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			foreach (var part in tailParts)
+			foreach (var part in Tail)
 			{
 				if (gridMode)
 				{
